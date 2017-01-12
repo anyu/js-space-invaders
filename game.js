@@ -32,36 +32,57 @@ player.prototype.draw = function(x,y) {
     context.fill();
 }
 
+var alienReady = false;
+var alienImage = new Image();
+alienImage.onload = function() {
+    alienReady = true;
+};
+alienImage.src = "imgs/alien1.png";
+
+
 var player1 = new player(20,0);
 
 function drawAliens(posX, posY) {
-    var origPosX = posX;
-    var origPosY = posY;
+    // var origPosX = posX;
+    // var origPosY = posY;
 
     for (var i = 0; i < alienMob.length; i++) {
         for (var j = 0; j < alienMob[0].length; j++) {
             if (alienMob[i][j] == 1) {
-                context.beginPath();
-                context.rect(posX, posY, 15, 15);
-                context.lineWidth = 1;
-                context.fillStyle = '#7cfc00';
-                context.fill();
-                origPosY++;
+                context.drawImage(alienImage, posX, posY);
             }
         }
-        posX+=40;
+        posX += 50;
     }
-            posX+=40;
-
 }
+
+function randomNumber(min, max) {
+    var result = Math.floor(Math.random() * ((max - min))) + min;
+    return result;
+}
+
+var changeDirection = false;
+
 
 function init() {
     console.log(alienMob);
 
+    // var randomX = randomNumber(0, 900);
+    var alienStartX = 100;
+
     var game = function() {  
         context.clearRect(0, 0, canvas.width, canvas.height);      
     	player1.draw(player1.x, 480);
-        drawAliens(10, 30);
+        drawAliens(alienStartX, 30);
+
+        if (!changeDirection) {
+            alienStartX += 7;
+        }
+        if (alienStartX > 200 || changeDirection) {
+            changeDirection = true;
+            alienStartX -= 7;
+        }
+
     }
     
 	gameLoop = setInterval(game, 350);            
