@@ -6,13 +6,13 @@ var NUM_ROWS = 10;
 var NUM_COLS = 5;
 
 var alienMob = [];
-var mobPosition = 0;
+var mobPositionX = 0;
 
 
 for (var i = 0; i < NUM_ROWS; i++) {
     alienMob[i] = new Array();
     for (j = 0; j < NUM_COLS; j++) {
-        alienMob[i][j] = 0;
+        alienMob[i][j] = 1;
     }
 }
 
@@ -34,26 +34,36 @@ player.prototype.draw = function(x,y) {
 
 var player1 = new player(20,0);
 
-function drawAliens() {
+function drawAliens(posX, posY) {
+    var origPosX = posX;
+    var origPosY = posY;
+
     for (var i = 0; i < alienMob.length; i++) {
-        context.beginPath();
-        context.rect(mobPosition, 20, 15,15);
-        context.lineWidth = 1;
-        context.fillStyle = '#7cfc00';
-        context.fill();
-        mobPosition+=40;
+        for (var j = 0; j < alienMob[0].length; j++) {
+            if (alienMob[i][j] == 1) {
+                context.beginPath();
+                context.rect(posX, posY, 15, 15);
+                context.lineWidth = 1;
+                context.fillStyle = '#7cfc00';
+                context.fill();
+                origPosY++;
+            }
+        }
+        posX+=40;
     }
+            posX+=40;
+
 }
 
 function init() {
+    console.log(alienMob);
 
     var game = function() {  
         context.clearRect(0, 0, canvas.width, canvas.height);      
     	player1.draw(player1.x, 480);
-        drawAliens();
+        drawAliens(10, 30);
     }
     
-
 	gameLoop = setInterval(game, 350);            
 
     addEventListener( "keydown", function(e) {    
