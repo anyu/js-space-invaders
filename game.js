@@ -8,7 +8,11 @@ var NUM_ROWS = 10;
 var NUM_COLS = 4;
 
 var alienType = ["imgs/alien1.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/alien4.png"];
-var alienSpeed = 5;
+var invasionSpeed = 5;
+var shipSpeed = 10;
+
+var alienLeftBound = canvas.width/9;
+var alienRightBound = canvas.width/3;
 
 var alienMob = [];
 
@@ -19,7 +23,6 @@ for (var i = 0; i < NUM_ROWS; i++) {
     }
 }
 
-var mobPositionX = 0;
 var changeDirection = false;
 
 /************************************************************************
@@ -27,10 +30,10 @@ Main game objects
 ************************************************************************/
 
 var ship = function(x,y) {
-	this.x = x;
-	this.y = y;
 	this.height = 22;
 	this.width = 52;
+    this.x = canvas.width/2 - this.width/2; // start ship in center 
+    this.y = y;
 	this.color = '#ffffff';
 }
 
@@ -73,7 +76,7 @@ alien.prototype.draw = function(x,y,type) {
 Key game functions
 ************************************************************************/
 
-var motherShip = new ship(20,0);
+var motherShip = new ship(20, 0);
 var loneAlien = new alien(200,100);
 
 function formAlienMob(posX, posY) {
@@ -99,16 +102,6 @@ function formAlienMob(posX, posY) {
     }
 }
 
-// function checkBounds(position) {
-//     if (!changeDirection) {
-//         position += 7;
-//     }
-//     if (position > 200 || changeDirection) {
-//         changeDirection = true;
-//         position -= 7;
-//     }
-// }
-
 
 /************************************************************************
 Helper functions
@@ -126,21 +119,23 @@ Main game loop
 
 function init() {
 
-    var alienMobPosition = 100;
+    var mobPosX = randomNumber(alienLeftBound, alienRightBound)
+    var mobPosY = 30;
 
     var game = function() {  
         context.clearRect(0, 0, canvas.width, canvas.height);      
     	motherShip.draw(motherShip.x, canvas.height - (motherShip.height+20));
-        formAlienMob(alienMobPosition, 30);
+        formAlienMob(mobPosX, mobPosY);
 
-        if (!changeDirection) {
-            alienMobPosition += alienSpeed;
+        if (mobPosX <= alienLeftBound || !changeDirection) {
+            changeDirection = false;
+            mobPosX += invasionSpeed;
         }
-        if (alienMobPosition > 200 || changeDirection) {
+
+        if (mobPosX >= alienRightBound || changeDirection) {
             changeDirection = true;
-            alienMobPosition -= alienSpeed;
+            mobPosX -= invasionSpeed;
         }
-
     }
     
 	gameLoop = setInterval(game, 350);            
@@ -148,13 +143,13 @@ function init() {
     addEventListener( "keydown", function(e) {    
 
         // A moves left
-        if(e.keyCode == 65) {
-            motherShip.x-=10;
+        if(e.keyCode == 65 && motherShip.x > 0) {
+            motherShip.x -= shipSpeed;
         }
 
         // D moves right
-        if(e.keyCode == 68) {
-            motherShip.x+=10;
+        if(e.keyCode == 68 && motherShip.x < (canvas.width - motherShip.width)) {
+            motherShip.x += shipSpeed;
         }
 
     });
