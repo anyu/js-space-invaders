@@ -5,7 +5,12 @@ var context = canvas.getContext("2d");
 var NUM_ROWS = 10;
 var NUM_COLS = 5;
 
+
+var aliens = [[0, 0, 0, 0],[1, 1, 1, 1],[2, 2, 2, 2],[3, 3, 3, 3]];
+
+
 var alienMob = [];
+var alienType = ["imgs/alien1.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/alien4.png"];
 var mobPositionX = 0;
 
 
@@ -37,7 +42,7 @@ var alienImage = new Image();
 alienImage.onload = function() {
     alienReady = true;
 };
-alienImage.src = "imgs/alien1.png";
+alienImage.src = alienType[0];
 
 
 var player1 = new player(20,0);
