@@ -7,9 +7,10 @@ var context = canvas.getContext("2d");
 var NUM_ROWS = 10;
 var NUM_COLS = 4;
 
-var alienMob = [];
 var alienType = ["imgs/alien1.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/alien4.png"];
-var mobPositionX = 0;
+var alienSpeed = 5;
+
+var alienMob = [];
 
 for (var i = 0; i < NUM_ROWS; i++) {
     alienMob[i] = new Array();
@@ -18,25 +19,25 @@ for (var i = 0; i < NUM_ROWS; i++) {
     }
 }
 
+var mobPositionX = 0;
+var changeDirection = false;
 
 /************************************************************************
 Main game objects
 ************************************************************************/
 
-var player = function(x,y) {
+var ship = function(x,y) {
 	this.x = x;
 	this.y = y;
-	this.height = 25;
-	this.width = 50;
+	this.height = 22;
+	this.width = 52;
 	this.color = '#ffffff';
 }
 
-player.prototype.draw = function(x,y) {
-    context.beginPath();
-    context.rect(x, y, 50,20);
-    context.lineWidth = 1;
-    context.fillStyle = 'red';
-    context.fill();
+ship.prototype.draw = function(x,y) {
+    var shipImage = new Image();
+    shipImage.src = "imgs/ship.png"
+    context.drawImage(shipImage, x, y);
 }
 
 var alien = function (x,y, type) {
@@ -72,9 +73,8 @@ alien.prototype.draw = function(x,y,type) {
 Key game functions
 ************************************************************************/
 
-var player1 = new player(20,0);
+var motherShip = new ship(20,0);
 var loneAlien = new alien(200,100);
-
 
 function formAlienMob(posX, posY) {
 
@@ -99,6 +99,16 @@ function formAlienMob(posX, posY) {
     }
 }
 
+// function checkBounds(position) {
+//     if (!changeDirection) {
+//         position += 7;
+//     }
+//     if (position > 200 || changeDirection) {
+//         changeDirection = true;
+//         position -= 7;
+//     }
+// }
+
 
 /************************************************************************
 Helper functions
@@ -114,24 +124,21 @@ function randomNumber(min, max) {
 Main game loop
 ************************************************************************/
 
-var changeDirection = false;
-
-
 function init() {
 
-    var alienStartX = 100;
+    var alienMobPosition = 100;
 
     var game = function() {  
         context.clearRect(0, 0, canvas.width, canvas.height);      
-    	player1.draw(player1.x, 480);
-        formAlienMob(alienStartX, 30);
+    	motherShip.draw(motherShip.x, canvas.height - (motherShip.height+20));
+        formAlienMob(alienMobPosition, 30);
 
         if (!changeDirection) {
-            alienStartX += 7;
+            alienMobPosition += alienSpeed;
         }
-        if (alienStartX > 200 || changeDirection) {
+        if (alienMobPosition > 200 || changeDirection) {
             changeDirection = true;
-            alienStartX -= 7;
+            alienMobPosition -= alienSpeed;
         }
 
     }
@@ -142,12 +149,12 @@ function init() {
 
         // A moves left
         if(e.keyCode == 65) {
-            player1.x-=10;
+            motherShip.x-=10;
         }
 
         // D moves right
         if(e.keyCode == 68) {
-            player1.x+=10;
+            motherShip.x+=10;
         }
 
     });
