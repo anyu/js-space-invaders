@@ -7,6 +7,7 @@
 }
 
 body {
+	font-family: 'Space Invaders', Arial, sans-serif;
 	background: black;
 	text-align: center; 
 }
@@ -19,6 +20,15 @@ h1 {
 	font-weight: normal;
 }
 
+a {
+	text-decoration: none;
+	color: white;
+}
+
+a:hover {
+	color: #7cfc00;;
+}
+
 canvas {
 	width: 900px;
     height: 500px;
@@ -26,4 +36,7 @@ canvas {
     margin: auto;
 }
 
-
+#container {
+	width: 910px;
+	margin: auto;
+}

@@ -1,13 +1,28 @@
 /************************************************************************
-Setup
+Canvas setup
 ************************************************************************/
+var cover = document.getElementById('coverpage');
 var canvas = document.getElementById("board");
 var context = canvas.getContext("2d");
  
+var play_button = document.getElementById('play-button');
+
+canvas.style.display = 'none';
+
+play_button.onclick = function() {
+    cover.style.display = 'none';
+    canvas.style.display = 'block';
+    init(); 
+};
+
+
+/************************************************************************
+Game setup
+************************************************************************/
 var NUM_ROWS = 10;
 var NUM_COLS = 4;
 
-var alienType = ["imgs/alien1_gif.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/alien4.png"];
+var alienType = ["imgs/alien1.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/alien4.png"];
 var invasionSpeed = 0.1;
 var shipSpeed = 1;
 
@@ -77,8 +92,8 @@ alien.prototype.draw = function(x,y,type) {
 Key game functions
 ************************************************************************/
 
-var motherShip = new ship(20, 0);
-var loneAlien = new alien(200, 100);
+var motherShip = new ship();
+var loneAlien = new alien();
 
 function formAlienMob(posX, posY) {
     for (var i = 0; i < alienMob.length; i++) {
@@ -101,7 +116,6 @@ function formAlienMob(posX, posY) {
         posX += 50;
     }
 }
-
 
 /************************************************************************
 Helper functions
@@ -148,7 +162,7 @@ function init() {
 
         if (68 in keyPress && motherShip.x < (canvas.width - motherShip.width)) {
             motherShip.x += shipSpeed;
-        }
+        }     
     }
     
     gameLoop = setInterval(game, 1);               
@@ -162,5 +176,3 @@ function init() {
     }, false);     
 
 }
-
-init();
