@@ -1,12 +1,22 @@
+@font-face {
+  font-family: 'Space Invaders';
+  src: url('fonts/space_invaders.eot'); 
+  src: url('fonts/space_invaders.eot?#iefix') format('embedded-opentype'), 
+       url('fonts/space_invaders.woff') format('woff'), 
+       url('fonts/space_invaders.ttf')  format('truetype');   
+}
+
 body {
 	background: black;
 	text-align: center; 
 }
 
 h1 {
-	font-family: Arial, sans-serif;
+	font-family: 'Space Invaders', Arial, sans-serif;
+	letter-spacing: 5px;
 	color: #7cfc00;
 	text-align: center;
+	font-weight: normal;
 }
 
 canvas {
@@ -15,3 +25,5 @@ canvas {
 	border: 5px solid white;
     margin: auto;
 }
+
+
