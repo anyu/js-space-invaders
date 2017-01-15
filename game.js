@@ -7,7 +7,7 @@ var context = canvas.getContext("2d");
 var NUM_ROWS = 10;
 var NUM_COLS = 4;
 
-var alienType = ["imgs/alien1.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/alien4.png"];
+var alienType = ["imgs/alien1_gif.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/alien4.png"];
 var invasionSpeed = 0.1;
 var shipSpeed = 1;
 
@@ -45,7 +45,7 @@ ship.prototype.draw = function(x,y) {
     context.drawImage(shipImage, x, y);
 }
 
-var alien = function (x,y, type) {
+var alien = function (x,y,type) {
     this.x = x;
     this.y = y;
     this.type = type;
@@ -69,7 +69,6 @@ alien.prototype.draw = function(x,y,type) {
             alienImage.src = alienType[3];  
             break;
     }   
-
     context.drawImage(alienImage, x, y);
 }
 
@@ -128,11 +127,17 @@ function init() {
         formAlienMob(mobPosX, mobPosY);
 
         if (mobPosX <= alienMobLeftBound || !changeDirection) {
+            if (mobPosX <= alienMobLeftBound) {
+                mobPosY += 20;
+            }   
             changeDirection = false;
             mobPosX += invasionSpeed;
         }
 
         if (mobPosX >= alienMobRightBound || changeDirection) {
+            if (mobPosX >= alienMobRightBound) {
+                mobPosY += 20;
+            }
             changeDirection = true;
             mobPosX -= invasionSpeed;
         }
