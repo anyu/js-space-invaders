@@ -8,6 +8,11 @@ var play_button = document.getElementById('play-button');
 
 canvas.style.display = 'none';
 
+/************************************************************************
+Sounds
+************************************************************************/
+var themeSong = new Audio("sounds/theme-song.wav");        
+var laserSound = new Audio("sounds/laser.wav");        
 
 /************************************************************************
 Game constants / game setup
@@ -42,14 +47,19 @@ Game play
 function init() {
     gameRunning = true;
 
+    themeSong.currentTime = 0;
+    themeSong.loop = true;
+    themeSong.volume = 0.4;
+    // themeSong.play();
+
     var alienMob = [];
-    // var invasionSpeed = 0.1;
-    var invasionSpeed = 0.5; // for developing; speed up mob
+    var invasionSpeed = 0.3;
+    // var invasionSpeed = 0.5; // for developing; speed up mob
     var shipSpeed = 1;
 
     var mobPosX = randomNumber(alienMobLeftBound, alienMobRightBound)
-    // var mobPosY = 20;
-    var mobPosY = 130; // for developing; start mob lower
+    var mobPosY = 20;
+    // var mobPosY = 130; // for developing; start mob lower
 
     var changeDirection = false;
 
@@ -216,10 +226,27 @@ function init() {
             endGame();
             cover.style.display = 'block';
             canvas.style.display = 'none';
-        }     
+        }   
+
+        // M to mute theme song
+        if (77 in keyPress) {
+            themeSong.pause();
+        } 
+
+        // N to unpause theme song
+        if (78 in keyPress) {
+            themeSong.play();
+        } 
+
+        // spacebar to trigger laser sound - placeholder
+        if (32 in keyPress) {
+            laserSound.currentTime = 0;
+            laserSound.play();
+        } 
     }  
 
     function endGame() {
+        themeSong.pause();
         gameRunning = false;
         clearInterval(gameLoop);
 
