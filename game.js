@@ -23,7 +23,8 @@ var NUM_ROWS = 10;
 var NUM_COLS = 4;
 
 var alienType = ["imgs/alien1.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/alien4.png"];
-var invasionSpeed = 0.1;
+// var invasionSpeed = 0.1;
+var invasionSpeed = 0.5; // for developing; speed up mob
 var shipSpeed = 1;
 
 var alienMob = [];
@@ -31,7 +32,8 @@ var alienMobLeftBound = canvas.width/9;
 var alienMobRightBound = canvas.width/3;
 
 var mobPosX = randomNumber(alienMobLeftBound, alienMobRightBound)
-var mobPosY = 30;
+// var mobPosY = 20;
+var mobPosY = 130; // for developing; start mob lower
 
 var changeDirection = false;
 
@@ -53,8 +55,7 @@ var ship = function(x,y) {
     this.height = 22;
     this.width = 52;
     this.x = canvas.width/2 - this.width/2; // start ship in center 
-    this.y = y;
-    this.color = '#ffffff';
+    this.y = canvas.height - (this.height+20);
 }
 
 ship.prototype.draw = function(x,y) {
@@ -64,6 +65,8 @@ ship.prototype.draw = function(x,y) {
 }
 
 var alien = function (x,y,type) {
+    this.height = 22;
+    this.height = 30;
     this.x = x;
     this.y = y;
     this.type = type;
@@ -96,27 +99,36 @@ Key game functions
 ************************************************************************/
 
 var motherShip = new ship();
-var loneAlien = new alien();
 
 function formAlienMob(posX, posY) {
     for (var i = 0; i < alienMob.length; i++) {
         for (var j = 0; j < alienMob[0].length; j++) {
             switch (alienMob[i][j]) {
                 case 0:
-                    loneAlien.draw(posX, posY, 0);
+                    alienMob[i][j] = new alien(posX, posY, 0);
                     break;
                 case 1:
-                    loneAlien.draw(posX, posY+50, 1);
+                    alienMob[i][j] = new alien(posX, posY+50, 1);
                     break;
                 case 2:
-                    loneAlien.draw(posX, posY+100, 2);
+                    alienMob[i][j] = new alien(posX, posY+100, 2);
                     break;
                 case 3:
-                    loneAlien.draw(posX, posY+150, 3);
+                    alienMob[i][j] = new alien(posX, posY+150, 3);
                     break;
             }   
         }           
-        posX += 50;
+    }
+}
+
+function drawAlienMob(posX, posY) {
+    for (var i = 0; i < alienMob.length; i++) {
+        for (var j = 0; j < alienMob[0].length; j++) {
+            if (alienMob[i][j].alive) {
+                alienMob[i][j].draw(posX, alienMob[i][j].y + posY, alienMob[i][j].type);
+            }
+        }
+        posX += 50;  
     }
 }
 
@@ -135,6 +147,17 @@ function automateMobMovement() {
         }
         changeDirection = true;
         mobPosX -= invasionSpeed;
+    }    
+}
+
+// extra 5px hardcoded for now, not sure why collision isn't detected until a few cols in
+function detectCollision(posX, posY) {
+    for (var i = 0; i < alienMob.length; i++) {
+        for (var j = 0; j < alienMob[0].length; j++) {
+            if ((alienMob[i][j].y + posY + 5) >= motherShip.y) {
+                endGame();
+            }
+        }
     }    
 }
 
@@ -158,6 +181,7 @@ function endGame() {
     clearInterval(gameLoop);
 }
 
+
 /************************************************************************
 Helper functions
 ************************************************************************/
@@ -176,11 +200,13 @@ function init() {
 
     var game = function() {  
         context.clearRect(0, 0, canvas.width, canvas.height);      
-    	motherShip.draw(motherShip.x, canvas.height - (motherShip.height+20));
         formAlienMob(mobPosX, mobPosY);
+        drawAlienMob(mobPosX, mobPosY);
+        motherShip.draw(motherShip.x, motherShip.y);
 
         automateMobMovement();
         playerInput(); 
+        detectCollision(mobPosX, mobPosY);
     }
     
     gameLoop = setInterval(game, 1);               
