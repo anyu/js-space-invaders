@@ -1,23 +1,24 @@
 @font-face {
-  font-family: 'Space Invaders';
-  src: url('fonts/space_invaders.eot'); 
-  src: url('fonts/space_invaders.eot?#iefix') format('embedded-opentype'), 
-       url('fonts/space_invaders.woff') format('woff'), 
-       url('fonts/space_invaders.ttf')  format('truetype');   
+	font-family: 'Space Invaders';
+	src: url('fonts/space_invaders.eot'); 
+	src: url('fonts/space_invaders.eot?#iefix') format('embedded-opentype'), 
+	   url('fonts/space_invaders.woff') format('woff'), 
+	   url('fonts/space_invaders.ttf')  format('truetype');   
 }
 
 body {
 	font-family: 'Space Invaders', Arial, sans-serif;
 	background: black;
 	text-align: center; 
+	color: white;
 }
 
 h1 {
 	font-family: 'Space Invaders', Arial, sans-serif;
-	letter-spacing: 5px;
 	color: #7cfc00;
 	text-align: center;
 	font-weight: normal;
+	font-size: 36px;
 }
 
 a {
@@ -31,9 +32,9 @@ a:hover {
 
 canvas {
 	width: 900px;
-    height: 500px;
+	height: 500px;
 	border: 5px solid white;
-    margin: auto;
+	margin: auto;
 }
 
 #container {

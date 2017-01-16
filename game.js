@@ -26,11 +26,14 @@ var alienType = ["imgs/alien1.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/
 var invasionSpeed = 0.1;
 var shipSpeed = 1;
 
+var alienMob = [];
 var alienMobLeftBound = canvas.width/9;
 var alienMobRightBound = canvas.width/3;
-var changeDirection = false;
 
-var alienMob = [];
+var mobPosX = randomNumber(alienMobLeftBound, alienMobRightBound)
+var mobPosY = 30;
+
+var changeDirection = false;
 
 for (var i = 0; i < NUM_ROWS; i++) {
     alienMob[i] = new Array();
@@ -117,6 +120,44 @@ function formAlienMob(posX, posY) {
     }
 }
 
+function automateMobMovement() {
+    if (mobPosX <= alienMobLeftBound || !changeDirection) {
+        if (mobPosX <= alienMobLeftBound) {
+            mobPosY += 20;
+        }   
+        changeDirection = false;
+        mobPosX += invasionSpeed;
+    }
+
+    if (mobPosX >= alienMobRightBound || changeDirection) {
+        if (mobPosX >= alienMobRightBound) {
+            mobPosY += 20;
+        }
+        changeDirection = true;
+        mobPosX -= invasionSpeed;
+    }    
+}
+
+function playerInput() {
+    if (65 in keyPress && motherShip.x > 0) { 
+        motherShip.x -= shipSpeed;
+    }
+
+    if (68 in keyPress && motherShip.x < (canvas.width - motherShip.width)) {
+        motherShip.x += shipSpeed;
+    } 
+
+    if (81 in keyPress) {        
+        endGame();
+        cover.style.display = 'block';
+        canvas.style.display = 'none';
+    }  
+}  
+
+function endGame() {
+    clearInterval(gameLoop);
+}
+
 /************************************************************************
 Helper functions
 ************************************************************************/
@@ -132,37 +173,14 @@ Main game loop
 ************************************************************************/
 
 function init() {
-    var mobPosX = randomNumber(alienMobLeftBound, alienMobRightBound)
-    var mobPosY = 30;
 
     var game = function() {  
         context.clearRect(0, 0, canvas.width, canvas.height);      
     	motherShip.draw(motherShip.x, canvas.height - (motherShip.height+20));
         formAlienMob(mobPosX, mobPosY);
 
-        if (mobPosX <= alienMobLeftBound || !changeDirection) {
-            if (mobPosX <= alienMobLeftBound) {
-                mobPosY += 20;
-            }   
-            changeDirection = false;
-            mobPosX += invasionSpeed;
-        }
-
-        if (mobPosX >= alienMobRightBound || changeDirection) {
-            if (mobPosX >= alienMobRightBound) {
-                mobPosY += 20;
-            }
-            changeDirection = true;
-            mobPosX -= invasionSpeed;
-        }
-
-        if (65 in keyPress && motherShip.x > 0) { 
-            motherShip.x -= shipSpeed;
-        }
-
-        if (68 in keyPress && motherShip.x < (canvas.width - motherShip.width)) {
-            motherShip.x += shipSpeed;
-        }     
+        automateMobMovement();
+        playerInput(); 
     }
     
     gameLoop = setInterval(game, 1);               
@@ -173,6 +191,8 @@ function init() {
 
     addEventListener("keyup", function(e) {
         delete keyPress[e.keyCode];
-    }, false);     
-
+    }, false);   
 }
+
+
+
