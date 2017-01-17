@@ -8,19 +8,22 @@ var play_button = document.getElementById('play-button');
 
 canvas.style.display = 'none';
 
+
 /************************************************************************
 Sounds
 ************************************************************************/
 var themeSong = new Audio("sounds/theme-song.wav");        
 var laserSound = new Audio("sounds/laser.wav");        
 
+
 /************************************************************************
 Game constants / game setup
 ************************************************************************/
-var NUM_ROWS = 10;
-var NUM_COLS = 4;
+var NUM_ROWS = 4;
+var NUM_COLS = 10;
 var alienType = ["imgs/alien1.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/alien4.png"];
 
+// Alien mob is constrained to move within a range
 var alienMobLeftBound = canvas.width/9;
 var alienMobRightBound = canvas.width/3;
 
@@ -28,7 +31,7 @@ var keyPress = {};
 var gameRunning = false;
 
 document.onkeydown = function(e) {
-    if (!gameRunning && e.keyCode == 82) {  // R to restart
+    if (!gameRunning && e.keyCode == 82) {  // 'R' to restart
         init();
     }
 }
@@ -46,26 +49,21 @@ Game play
 
 function init() {
     gameRunning = true;
-
-    themeSong.currentTime = 0;
-    themeSong.loop = true;
-    themeSong.volume = 0.4;
-    // themeSong.play();
+    startMusic();
 
     var alienMob = [];
     var invasionSpeed = 0.3;
-    // var invasionSpeed = 0.5; // for developing; speed up mob
     var shipSpeed = 1;
 
-    var mobPosX = randomNumber(alienMobLeftBound, alienMobRightBound)
+    // randomize horizontal starting point for alien mob
+    var mobPosX = randomNumber(alienMobLeftBound, alienMobRightBound) 
     var mobPosY = 20;
-    // var mobPosY = 130; // for developing; start mob lower
-
     var changeDirection = false;
 
-    for (var i = 0; i < NUM_ROWS; i++) {
+    // fill a 2d array with rows of different #'s to set up for different alien types
+    for (var i = 0; i < NUM_COLS; i++) {
         alienMob[i] = new Array();
-        for (j = 0; j < NUM_COLS; j++) {
+        for (j = 0; j < NUM_ROWS; j++) {
             alienMob[i][j] = j;
         }
     }
@@ -119,23 +117,29 @@ function init() {
 
     var motherShip = new ship();
 
+
     /************************************************************************
     Main game loop
     ************************************************************************/
 
     var game = function() {  
-        context.clearRect(0, 0, canvas.width, canvas.height);      
+        context.clearRect(0, 0, canvas.width, canvas.height);     
+
+        // update the game board
         formAlienMob(mobPosX, mobPosY);
+        automateMobMovement();
+        checkPlayerInput(); 
+        detectCollision(mobPosX, mobPosY);
+
+        // call draw functions
         drawAlienMob(mobPosX, mobPosY);
         motherShip.draw(motherShip.x, motherShip.y);
-
-        automateMobMovement();
-        playerInput(); 
-        detectCollision(mobPosX, mobPosY);
     }
     
     gameLoop = setInterval(game, 1);               
 
+
+    // detect keyboard inputs
     addEventListener("keydown", function(e) {
         keyPress[e.keyCode] = true;
     }, false);
@@ -145,10 +149,12 @@ function init() {
     }, false);   
 
 
+
     /************************************************************************
     Key game functions
     ************************************************************************/
 
+    // create individual aliens and assemble them into grid
     function formAlienMob(posX, posY) {
         for (var i = 0; i < alienMob.length; i++) {
             for (var j = 0; j < alienMob[0].length; j++) {
@@ -210,40 +216,47 @@ function init() {
         }    
     }
 
-    function playerInput() {
-        // A moves left
+    function checkPlayerInput() {
+        // 'A' moves left
         if (65 in keyPress && motherShip.x > 0) { 
             motherShip.x -= shipSpeed;
         }
 
-        // D moves right
+        // 'D' moves right
         if (68 in keyPress && motherShip.x < (canvas.width - motherShip.width)) {
             motherShip.x += shipSpeed;
         } 
 
-        // Q to quit
+        // 'Q' to quit
         if (81 in keyPress) {   
             endGame();
             cover.style.display = 'block';
             canvas.style.display = 'none';
         }   
 
-        // M to mute theme song
+        // 'M' to mute theme song
         if (77 in keyPress) {
             themeSong.pause();
         } 
 
-        // N to unpause theme song
+        // 'N' to unpause theme song
         if (78 in keyPress) {
             themeSong.play();
         } 
 
-        // spacebar to trigger laser sound - placeholder
+        // 'spacebar' to trigger laser sound - placeholder
         if (32 in keyPress) {
             laserSound.currentTime = 0;
             laserSound.play();
         } 
     }  
+
+    function startMusic() {
+        themeSong.currentTime = 0;
+        themeSong.loop = true;
+        themeSong.volume = 0.4;
+        themeSong.play();
+    }
 
     function endGame() {
         themeSong.pause();
