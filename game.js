@@ -49,11 +49,12 @@ Game play
 
 function init() {
     gameRunning = true;
-    startMusic();
+    // startMusic();
 
     var alienMob = [];
     var invasionSpeed = 0.3;
     var shipSpeed = 1;
+    var bulletSpeed = 1;
 
     // randomize horizontal starting point for alien mob
     var mobPosX = randomNumber(alienMobLeftBound, alienMobRightBound) 
@@ -115,8 +116,24 @@ function init() {
         context.drawImage(alienImage, x, y);
     }
 
-    var motherShip = new ship();
+    var bullet = function (x,y) {
+        this.x = x;
+        this.y = y;
+        this.fired = false;
+    }
 
+    bullet.prototype.draw = function(x,y) {
+        context.fillStyle = "blue";
+        context.fillRect(x, y, 10, 10);
+        // context.fillStyle = "blue";
+        // context.beginPath();
+        // context.rect(50,50,100,100);
+        // context.closePath();        
+        // context.fill();
+    }
+
+    var motherShip = new ship();
+    var bullet1 = new bullet(40, 0);
 
     /************************************************************************
     Main game loop
@@ -134,6 +151,11 @@ function init() {
         // call draw functions
         drawAlienMob(mobPosX, mobPosY);
         motherShip.draw(motherShip.x, motherShip.y);
+
+        if (bullet1.fired) {
+            bullet1.y -= 2;
+            bullet1.draw(motherShip.x + motherShip.width/2, motherShip.y + bullet1.y);
+        }
     }
     
     gameLoop = setInterval(game, 1);               
@@ -220,6 +242,7 @@ function init() {
         // 'A' moves left
         if (65 in keyPress && motherShip.x > 0) { 
             motherShip.x -= shipSpeed;
+            // console.log("motherShipX: " + motherShip.x);
         }
 
         // 'D' moves right
@@ -246,8 +269,11 @@ function init() {
 
         // 'spacebar' to trigger laser sound - placeholder
         if (32 in keyPress) {
-            laserSound.currentTime = 0;
-            laserSound.play();
+            bullet1.fired = true;
+            // console.log("bullet1y: " + bullet1.y);
+            // bullet1.y -= bulletSpeed;
+            // laserSound.currentTime = 0;
+            // laserSound.play();
         } 
     }  
 
