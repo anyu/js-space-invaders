@@ -25,7 +25,7 @@ var alienType = ["imgs/alien1.png", "imgs/alien2.png", "imgs/alien3.png", "imgs/
 
 // Alien mob is constrained to move within a range
 var alienMobLeftBound = canvas.width/9;
-var alienMobRightBound = canvas.width/3;
+var alienMobRightBound = canvas.width/4;
 
 var keyPress = {};
 var gameRunning = false;
@@ -89,7 +89,7 @@ function init() {
 
     var alien = function (x,y,type) {
         this.height = 22;
-        this.height = 30;
+        this.width = 30;
         this.x = x;
         this.y = y;
         this.type = type;
@@ -144,9 +144,9 @@ function init() {
         formAlienMob(mobPosX, mobPosY);
         automateMobMovement();
         checkPlayerInput(); 
-        detectCollision(mobPosX, mobPosY);
         
         detectBulletMovement();
+        detectCollision(mobPosX, mobPosY);
 
         // call draw functions
         drawAlienMob(mobPosX, mobPosY);
@@ -193,7 +193,8 @@ function init() {
                         alienMob[i][j] = new alien(posX, posY+150, 3);
                         break;
                 }   
-            }           
+            }   
+            posX += 50;        
         }
     }
 
@@ -201,10 +202,9 @@ function init() {
         for (var i = 0; i < alienMob.length; i++) {
             for (var j = 0; j < alienMob[0].length; j++) {
                 if (alienMob[i][j].alive) {
-                    alienMob[i][j].draw(posX, alienMob[i][j].y + posY, alienMob[i][j].type);
+                    alienMob[i][j].draw(alienMob[i][j].x+posX, alienMob[i][j].y + posY, alienMob[i][j].type);
                 }
             }
-            posX += 50;  
         }
     }
 
@@ -250,6 +250,14 @@ function init() {
     function detectCollision(posX, posY) {
         for (var i = 0; i < alienMob.length; i++) {
             for (var j = 0; j < alienMob[0].length; j++) {
+
+               console.log("mainBulletx: " + mainBullet.x);
+               console.log("alienMob[0][0].x: " + alienMob[0][0].x);
+
+                if ((mainBullet.x >= alienMob[i][j].x) && (mainBullet.x >= alienMob[i][j].x) && (mainBullet.y <= alienMob[i][j].y)) {
+                    alienMob[i][j].alive = false;
+                }
+
                 if ((alienMob[i][j].y + posY + 5) >= motherShip.y) {
                     endGame();
                 }
