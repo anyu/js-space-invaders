@@ -54,7 +54,7 @@ function init() {
     var alienMob = [];
     var invasionSpeed = 0.3;
     var shipSpeed = 1;
-    var bulletSpeed = 1;
+    var bulletSpeed = 2.5;
 
     // randomize horizontal starting point for alien mob
     var mobPosX = randomNumber(alienMobLeftBound, alienMobRightBound) 
@@ -119,21 +119,19 @@ function init() {
     var bullet = function (x,y) {
         this.x = x;
         this.y = y;
+        this.height = 10;
+        this.width = 10;
+        this.visible = false;
         this.fired = false;
     }
 
-    bullet.prototype.draw = function(x,y) {
+    bullet.prototype.draw = function(x,y, height, width) {
         context.fillStyle = "blue";
-        context.fillRect(x, y, 10, 10);
-        // context.fillStyle = "blue";
-        // context.beginPath();
-        // context.rect(50,50,100,100);
-        // context.closePath();        
-        // context.fill();
+        context.fillRect(x, y, height, width);
     }
 
     var motherShip = new ship();
-    var bullet1 = new bullet(40, 0);
+    var mainBullet = new bullet();
 
     /************************************************************************
     Main game loop
@@ -147,14 +145,15 @@ function init() {
         automateMobMovement();
         checkPlayerInput(); 
         detectCollision(mobPosX, mobPosY);
+        
+        detectBulletMovement();
 
         // call draw functions
         drawAlienMob(mobPosX, mobPosY);
         motherShip.draw(motherShip.x, motherShip.y);
 
-        if (bullet1.fired) {
-            bullet1.y -= 2;
-            bullet1.draw(motherShip.x + motherShip.width/2, motherShip.y + bullet1.y);
+        if (mainBullet.visible) {
+            mainBullet.draw(mainBullet.x, mainBullet.y, 10, 10);
         }
     }
     
@@ -227,6 +226,26 @@ function init() {
         }    
     }
 
+    function detectBulletMovement() {
+
+        // if bullet has been fired and goes off screen, bullet can be fired again 
+        if (mainBullet.fired && mainBullet.y <= 0) {
+            mainBullet.visible = false;
+            mainBullet.fired = false;
+        }  
+
+        // bullet originates from the motherShip
+        if (!mainBullet.fired) {
+            mainBullet.x = (motherShip.x + motherShip.width/2) - mainBullet.width/2;
+            mainBullet.y = motherShip.y;         
+        }
+
+        // once fired, bullet flies solo
+        else {
+            mainBullet.y -= bulletSpeed;
+        }
+    }
+
     // extra 5px hardcoded for now, not sure why collision isn't detected until a few cols in
     function detectCollision(posX, posY) {
         for (var i = 0; i < alienMob.length; i++) {
@@ -269,11 +288,11 @@ function init() {
 
         // 'spacebar' to trigger laser sound - placeholder
         if (32 in keyPress) {
-            bullet1.fired = true;
-            // console.log("bullet1y: " + bullet1.y);
-            // bullet1.y -= bulletSpeed;
-            // laserSound.currentTime = 0;
-            // laserSound.play();
+            mainBullet.visible = true;
+            mainBullet.fired = true;
+
+            laserSound.currentTime = 100;
+            laserSound.play();
         } 
     }  
 
